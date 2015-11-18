@@ -1,5 +1,5 @@
-FROM gitlab/gitlab-ce:8.1.4-ce.0
-MAINTAINER Christian Marquardt <christian@marquardt.sc>
+FROM gitlab/gitlab-ce:latest
+MAINTAINER Christian Marquardt
 
 # Subgit version
 ENV SUBGIT_VERSION 3.0.0
