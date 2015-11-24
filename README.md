@@ -1,6 +1,6 @@
 # gitlab-ce-subgit
 
-Image: [marq/gitlab-ce-docker](https://hub.docker.com/r/marq/gitlab-ce-subgit/)
+Image: [marq/gitlab-ce-subgit](https://hub.docker.com/r/marq/gitlab-ce-subgit/)
 
 [GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) installed.
 
@@ -17,6 +17,8 @@ All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/doc
 `/var/log/gitlab`: Logfiles
 
 `/etc/subgit`: Location for subgit.key (if available; SubGit will find it there)
+
+`/etc/cron.d`: Location for cron jobs (e.g., backups)
 
 ## Usage
 

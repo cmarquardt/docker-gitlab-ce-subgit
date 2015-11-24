@@ -19,4 +19,4 @@ RUN curl -o subgit.deb -q http://old.subgit.com/download/subgit_${SUBGIT_VERSION
 RUN sed -i '/^EXTRA_JVM_ARGUMENTS.*/a EXTRA_JVM_ARGUMENTS="$EXTRA_JVM_ARGUMENTS -Djsse.enableSNIExtension=false"' /usr/bin/subgit
 
 # Define data volumes
-VOLUME ["/etc/gitlab", "/etc/subgit", "/var/opt/gitlab", "/var/log/gitlab"]
+VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/log/gitlab"]
