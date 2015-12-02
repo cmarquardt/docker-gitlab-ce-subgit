@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Launch cron (as daemon)
+/usr/sbin/cron -l
+
+# Call original GitLab wrapper
+/assets/wrapper

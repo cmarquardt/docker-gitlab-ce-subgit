@@ -18,13 +18,15 @@ All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/doc
 
 `/etc/subgit`: Location for subgit.key (if available; SubGit will find it there)
 
-`/etc/cron.d`: Location for cron jobs (e.g., backups)
+`/etc/cron.d`: Location for cron jobs (e.g., backups; see below)
 
 ## Usage
 
 For GitLab itself, see http://doc.gitlab.com/omnibus/docker/.
 
 For SubGit and Gitlab, see http://www.subgit.com/gitlab.html.
+
+In contrast to the original image, the cron daemon is also launched when starting up GitLab. This allows processing of cron jobs added to /etc/cron.d. 
 
 ## Tags
 
