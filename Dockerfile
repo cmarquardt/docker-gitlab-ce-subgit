@@ -18,5 +18,11 @@ RUN curl -o subgit.deb -q http://old.subgit.com/download/subgit_${SUBGIT_VERSION
 # Fix SNI error with Java 7
 RUN sed -i '/^EXTRA_JVM_ARGUMENTS.*/a EXTRA_JVM_ARGUMENTS="$EXTRA_JVM_ARGUMENTS -Djsse.enableSNIExtension=false"' /usr/bin/subgit
 
+# Our wrapper script (enabling cron, and then launching GitLab's wrapper)
+COPY assets/outerwrapper /assets/
+
 # Define data volumes
 VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/log/gitlab"]
+
+# Wrapper to handle signal, trigger runit and reconfigure GitLab
+CMD ["/assets/outerwrapper"]
