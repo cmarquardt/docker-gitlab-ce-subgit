@@ -26,3 +26,4 @@ VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/lo
 
 # Wrapper to handle signal, trigger runit and reconfigure GitLab
 CMD ["/assets/outerwrapper"]
+
