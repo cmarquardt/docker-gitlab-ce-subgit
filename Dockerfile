@@ -1,4 +1,4 @@
-FROM gitlab/gitlab-ce:8.4.3-ce.0
+FROM gitlab/gitlab-ce:8.4.4-ce.0
 MAINTAINER Christian Marquardt
 
 # Subgit version
