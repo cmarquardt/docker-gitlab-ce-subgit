@@ -2,7 +2,7 @@
 
 Image: [marq/gitlab-ce-subgit](https://hub.docker.com/r/marq/gitlab-ce-subgit/)
 
-[GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) installed.
+[GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) v3.0.0 installed.
 
 All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/docker/) remains valid; the only difference compared to the [official Docker image(s)](https://hub.docker.com/r/gitlab/gitlab-ce/) provided by GitLabHQ is that this image contains an installation of SubGit, a tool for migrating and even mirroring subversion and git source code repositories. In addition, one more volume (`/etc/subgit`) is exposed, allowing to store SubGit related  things like a license key.
 
@@ -35,3 +35,5 @@ Note that the tag `:latest` is automatically build from the official GitLab repo
 ## Related
 
 Bertrand Roussel provides at standalone Docker image ([corfr/subgit](https://registry.hub.docker.com/u/corfr/subgit/) | [Github](https://github.com/CoRfr/docker-subgit)) for an alternative approach to use SubGit with (in fact any) dockerized git repository servers.
+
+If you are looking for a Docker image combining GitLab's Eb´nterprise Edition (EE, which requires a valid license) with SubGit, please check out [marq/gitlab-ee-subgit](https://hub.docker.com/r/marq/gitlab-ee-subgit/).
