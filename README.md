@@ -2,7 +2,7 @@
 
 Image: [marq/gitlab-ce-subgit](https://hub.docker.com/r/marq/gitlab-ce-subgit/)
 
-[GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) v3.0.0 installed.
+[GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) v3.1.2 installed.
 
 All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/docker/) remains valid; the only difference compared to the [official Docker image(s)](https://hub.docker.com/r/gitlab/gitlab-ce/) provided by GitLabHQ is that this image contains an installation of SubGit, a tool for migrating and even mirroring subversion and git source code repositories. In addition, one more volume (`/etc/subgit`) is exposed, allowing to store SubGit related  things like a license key.
 
@@ -31,6 +31,15 @@ In contrast to the original image, the cron daemon is also launched when startin
 ## Tags
 
 Note that the tag `:latest` is automatically build from the official GitLab repository; whenever GitlabHQ decides to push a new (even experimental) image. I handle versioned tags manually, based on officially tagged images as available in the Official GitLab repository. Should I forget to update, please raise a ticket at github. Thanks!
+
+## SubGit Versions
+
+Starting with the image for v8.7 of GitLab, the SubGit included in this image is at v3.1.2. For a while, I'll be maintaining an alternate image with the older v3.0.0 of SubGit included. The images can be distinguished by their tags, e.g.:
+
+    gitlab-ce-subgit:8.7.0-ce.0:        GitLab v8.7.0 (CE), SubGit v3.1.2
+    gitlab-ce-subgit:8.7.0-ce.0-3.0.0:  GitLab v8.7.0 (CE), SubGit v3.0.0
+
+The `:latest` image is also using SubGit v3.1.2.
 
 ## Related
 
