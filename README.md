@@ -39,7 +39,7 @@ Starting with the image for v8.7 of GitLab, the SubGit included in this image is
     gitlab-ce-subgit:8.7.0-ce.0:        GitLab v8.7.0 (CE), SubGit v3.2.0
     gitlab-ce-subgit:8.7.0-ce.0-3.0.0:  GitLab v8.7.0 (CE), SubGit v3.0.0
 
-The `:latest` image is also using SubGit v3.1.2.
+The `:latest` image is also using SubGit v3.2.0.
 
 ## Related
 
