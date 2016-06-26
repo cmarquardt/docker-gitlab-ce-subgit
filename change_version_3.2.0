@@ -1,0 +1,30 @@
+#! /bin/bash
+#
+# Update GitLab CE Dockerfile
+# ---------------------------
+
+# Command line arguments
+
+OLD=$1
+NEW=$2
+
+# Update Docker file
+
+SEDCMD="s/$OLD/$NEW/g"
+sed -i '.bak' -e $SEDCMD Dockerfile
+
+# Git instructions
+
+echo "Dockerfile has been updated. Changes are:"
+echo ""
+diff -C 3 Dockerfile.bak Dockerfile
+echo ""
+echo "If the contents are ok, run the following commands:"
+echo ""
+echo "   git add Dockerfile"
+echo "   git commit -m 'Update to GitLab (CE) v$NEW.'"
+echo "   git tag $NEW -m 'Update to GitLab (CE) v$NEW w/ SubGit v3.1.2.'"
+echo "   git push"
+echo "   git push --tags"
+echo ""
+echo "and remove the file  'Dockerfile.bak'  which is a backup of the old version."
