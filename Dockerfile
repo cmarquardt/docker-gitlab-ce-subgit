@@ -1,8 +1,8 @@
-FROM gitlab/gitlab-ce:latest
+FROM gitlab/gitlab-ce:8.11.0-ce.1
 MAINTAINER Christian Marquardt
 
 # Subgit version
-ENV SUBGIT_VERSION 3.2.2
+ENV SUBGIT_VERSION 3.0.0
 
 # Install Java
 RUN apt-get update && \
