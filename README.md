@@ -41,6 +41,8 @@ Starting with the image for v8.11 of GitLab, the SubGit included in this image i
 
 The `:latest` image is also using SubGit v3.2.2.
 
+Update: Since September 2016, older versions of SubGit are no longer available; hence, versions newer than v8.11.2 will only be available with the current SubGit version.
+
 ## Related
 
 Bertrand Roussel provides at standalone Docker image ([corfr/subgit](https://registry.hub.docker.com/u/corfr/subgit/) | [Github](https://github.com/CoRfr/docker-subgit)) for an alternative approach to use SubGit with (in fact any) dockerized git repository servers.
