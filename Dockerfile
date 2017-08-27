@@ -2,7 +2,7 @@ FROM gitlab/gitlab-ce:latest
 MAINTAINER Christian Marquardt
 
 # Subgit version
-ENV SUBGIT_VERSION 3.2.2
+ENV SUBGIT_VERSION 3.2.5
 
 # Install Java
 RUN apt-get update && \
@@ -26,4 +26,3 @@ VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/lo
 
 # Wrapper to handle signal, trigger runit and reconfigure GitLab
 CMD ["/assets/outerwrapper"]
-
