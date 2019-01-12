@@ -26,11 +26,13 @@ For GitLab itself, see http://doc.gitlab.com/omnibus/docker/.
 
 For SubGit and Gitlab, see http://www.subgit.com/gitlab.html.
 
-In contrast to the original image, the cron daemon is also launched when starting up GitLab. This allows processing of cron jobs added to /etc/cron.d.
+In contrast to the original image, the cron daemon is also launched when starting up GitLab. This allows processing of cron jobs added to `/etc/cron.d`, e.g. for performing automated backups.
 
 ## Tags
 
-Note that the tag `:latest` is automatically build from the official GitLab repository; whenever GitlabHQ decides to push a new (even experimental) image. I handle versioned tags manually, based on officially tagged images as available in the Official GitLab repository. Should I forget to update, please raise a ticket at github. Thanks!
+The `:latest` tag is automatically build from the official GitLab repository; that is whenever GitlabHQ decides to push a new (even experimental) image. This mechanism may break, e.g. when the download link to subgit changes, or when the currently being used subgit version isn't available any more. If you find that happening, and don't see it fixed within a few days, please raise a ticket at GitHub. Thanks!
+
+***Note**: I used to create versioned tags manually until (about) GitLab v9.5 in late 2017; they were based on tagged images as available in the official GitLab repository. These tagged (though by now outdated) images are still available on Docker Hub. However, as I lost the need for them, I stopped generating them; only the `:latest` image is currently being generated on a regular basis. If you have a need for tagged images of newer GitLab versions, please raise a ticket at GitHub. Thank you!*
 
 ## SubGit Versions
 
