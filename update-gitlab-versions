@@ -144,7 +144,7 @@ class DockerTag(object):
 
 
 dockerfile_template = """
-FROM gitlab/gitlab-ee:{tag}
+FROM {name}:{tag}
 MAINTAINER Christian Marquardt
 
 # Subgit version
@@ -247,7 +247,8 @@ if __name__ == "__main__":
         branch = tag2branch(tag)
         if branch in branches:
             print("Switching to branch %s" % branch)
-            repo.git.checkout(branch)
+            if not args.dry_run:
+                repo.git.checkout(branch)
         else:
             print("Creating new branch %s and pushing to origin..." % branch)
             if not args.dry_run:
@@ -260,10 +261,10 @@ if __name__ == "__main__":
 
         print("Creating Dockerfile for GitLab v%s..." % tag)
         if args.dry_run:
-            print(dockerfile_template.format(tag = tag))
+            print(dockerfile_template.format(name = args.name, tag = tag))
         else:
             with open("Dockerfile", "w") as f:
-                print(dockerfile_template.format(tag = tag), file = f)
+                print(dockerfile_template.format(name = args.name, tag = tag), file = f)
             f.close()
 
         # Committing, tagging, and pushing
