@@ -1,4 +1,5 @@
-FROM gitlab/gitlab-ce:latest
+
+FROM gitlab/gitlab-ee:10.0.0-ce.0
 MAINTAINER Christian Marquardt
 
 # Subgit version
@@ -26,3 +27,4 @@ VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/lo
 
 # Wrapper to handle signal, trigger runit and reconfigure GitLab
 CMD ["/assets/outerwrapper"]
+
