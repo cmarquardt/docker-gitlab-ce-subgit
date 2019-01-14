@@ -1,0 +1,280 @@
+#!/usr/bin/env python3
+
+"""Update combined GitLab and SubGit Docker images.
+
+This program is used to update the combined GitLab and SubGit Docker images on
+Docker Hub, based on official GitLab Docker releases. For this, the program
+downloads a list of release tags from Docker Hub, and compares
+
+References:
+
+    The code accessing Docker Hub repositories is based on https://github.com/al4/docker-registry-list.
+
+"""
+
+#------------------------------------------------------------------------------
+# Imports
+#------------------------------------------------------------------------------
+
+import argparse
+import git
+import json
+import logging
+import operator
+import re
+import requests
+
+#------------------------------------------------------------------------------
+# Utilities
+#------------------------------------------------------------------------------
+
+docker_tag = re.compile(r"^(\d{1,2})\.(\d{1,2})\.(\d{1,2})-(ee|ce)\.(\d{1})")
+
+def get_docker_hub_token(auth_url, image_name):
+
+    params = {
+        "service": "registry.docker.io",
+        "scope":   "repository:{image}:pull".format(image = image_name)
+    }
+
+    r = requests.get(auth_url + "/token", params = params)
+
+    if not r.status_code == 200:
+        logging.error("Error status {}".format(r.status_code))
+        raise RuntimeError("Cannot get Docker Hub authentification token")
+
+    j = r.json()
+    return j["token"]
+
+
+def get_docker_tags(index_url, token, image_name):
+
+    h = {"Authorization": "Bearer {}".format(token)}
+    r = requests.get("{}/v2/{}/tags/list".format(index_url, image_name), headers = h)
+
+    j = r.json()
+
+    try:
+        tags = j["tags"]
+    except KeyError:
+        logging.error("Cannot extract Docker Hub version tags:")
+        print(json.dumps(j, indent = 2))
+        raise RuntimeError("Cannot extract Docker Hub version tags.")
+
+    return tags
+
+
+def get_git_branches_and_tags(path):
+
+    repo  = git.Repo(path)
+    _tags = repo.tags
+
+    gtags = []  ;  tags  = []
+    for t in _tags:
+        tag = str(t.name)
+        gtags.append(tag)
+        if docker_tag.match(tag):
+            tags.append(DockerTag(tag))
+    last = sorted(tags, key = operator.attrgetter("major", "minor", "patch", "sp"))[-1]
+
+    return repo.heads, gtags, last
+
+
+def tag2branch(tag):
+
+    return "release/%d.%d" % (tag.major, tag.minor)
+
+
+class DockerTag(object):
+
+    def __init__(self, tagstring):
+        m = docker_tag.match(tagstring)
+        self.tag   = tagstring
+        self.major = int(m.group(1))
+        self.minor = int(m.group(2))
+        self.patch = int(m.group(3))
+        self.kind  = m.group(4)
+        self.sp    = int(m.group(5))
+
+    def __eq__(self, other):
+        return self.tag == other.tag
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+
+        if result is not NotImplemented:
+            return not result
+
+        return NotImplemented
+
+    def __lt__(self, other):
+        return NotImplemented
+
+    def __gt__(self, other):
+        if self.major < other.major:
+            result = False
+        elif self.major == other.major:
+            if self.minor < other.minor:
+                result = False
+            elif self.minor == other.minor:
+                if self.patch < other.patch:
+                    result = False
+                elif self.patch == other.patch:
+                    if self.sp <= other.sp:
+                        result = False
+                    else: # self.sp > other.sp
+                        result = True
+                else: # self.patch > other.patch
+                    result = True
+            else: # self.minor > other.minor
+                result = True
+        else: # self.major > other.major
+            result = True
+
+        return result
+
+    def __le__(self, other):
+        return NotImplemented
+
+    def __ge__(self, other):
+        return NotImplemented
+
+    def __repr__(self):
+        return self.tag
+
+
+dockerfile_template = """
+FROM {name}:{tag}
+MAINTAINER Christian Marquardt
+
+# Subgit version
+ENV SUBGIT_VERSION 3.3.5
+
+# Install Java
+RUN apt-get update && \\
+    apt-get install -y openjdk-8-jre-headless && \\
+    apt-get clean && \\
+    rm -rf /var/lib/apt/lists/* /tmp/*
+
+# Download subgit from official website and install
+RUN curl -o subgit.deb -q https://subgit.com/files/subgit_${{SUBGIT_VERSION}}_all.deb && \\
+    dpkg -i subgit.deb && \\
+    rm -fr subgit.deb
+
+# Fix SNI error with Java 7
+RUN sed -i '/^EXTRA_JVM_ARGUMENTS.*/a EXTRA_JVM_ARGUMENTS="$EXTRA_JVM_ARGUMENTS -Djsse.enableSNIExtension=false"' /usr/bin/subgit
+
+# Our wrapper script (enabling cron, and then launching GitLab's wrapper)
+COPY assets/outerwrapper /assets/
+
+# Define data volumes
+VOLUME ["/etc/gitlab", "/etc/subgit", "/etc/cron.d", "/var/opt/gitlab", "/var/log/gitlab"]
+
+# Wrapper to handle signal, trigger runit and reconfigure GitLab
+CMD ["/assets/outerwrapper"]
+"""
+
+
+#------------------------------------------------------------------------------
+# Main program
+#------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    # Command line arguments
+
+    p = argparse.ArgumentParser()
+
+    p.add_argument("name", help = "Name of image to list versions of")
+    p.add_argument("-m", "--max", metavar = "<max-number-of-releases>", help = "Number of releases to process", default = 0, type = int)
+    p.add_argument("-l", "--list", help = "Only show which versions / imags would / could be built", action = "store_true", default = False)
+    p.add_argument("-n", "--dry-run", help = "Only show what would be done; do not change anything", action = "store_true", default = False)
+    p.add_argument('-t', '--token', metavar = "<token>",
+                   help = 'Auth token to use (automatically fetched if not specified)')
+    p.add_argument('-i', '--index-url', metavar = "<index-url>", default = 'https://index.docker.io')
+    p.add_argument('-a', '--auth-url', metavar = "<auth-url>", default = 'https://auth.docker.io')
+
+    args = p.parse_args()
+
+    # Get Docker Hub tags
+
+    token = args.token or get_docker_hub_token(auth_url = args.auth_url, image_name = args.name)
+    dtags = get_docker_tags(args.index_url, token, args.name)
+
+    # Get git tags and branches
+
+    branches, gtags, last = get_git_branches_and_tags(".")
+
+    # Extract the tags we're interested in
+
+    tags = []
+    for tag in dtags:
+        if docker_tag.match(tag) and tag not in gtags:
+            t = DockerTag(tag)
+            if t > last:
+                tags.append(t)
+
+    # Check is there's something to update
+
+    if len(tags) == 0:
+        print("There are no new releases.")
+        exit(-1)
+
+    # Sort releases to be updated
+
+    tags = sorted(tags, key = operator.attrgetter("major", "minor", "patch", "sp"))
+
+    # Provide a list of images that need to be built
+
+    if args.list:
+        for tag in tags:
+            print("   %s" % tag)
+        exit(0)
+
+    # Shorten list of releases to be build (if desired)
+
+    if args.max > 0 and len(tags) > args.max:
+        tags = tags[0:args.max]
+
+    # Loop over all new releases
+
+    repo = git.Repo(".")
+
+    for tag in tags:
+
+        # Switch into or create corresponding branch
+
+        branch = tag2branch(tag)
+        if branch in branches:
+            print("Switching to branch %s" % branch)
+            if not args.dry_run:
+                repo.git.checkout(branch)
+        else:
+            print("Creating new branch %s and pushing to origin..." % branch)
+            if not args.dry_run:
+                repo.git.checkout("master")
+                repo.git.checkout("-b", branch)
+                repo.git.push(branch, u = "origin")
+                branches = repo.heads
+
+        # Creating new Dockerfile
+
+        print("Creating Dockerfile for GitLab v%s..." % tag)
+        if args.dry_run:
+            print(dockerfile_template.format(name = args.name, tag = tag))
+        else:
+            with open("Dockerfile", "w") as f:
+                print(dockerfile_template.format(name = args.name, tag = tag), file = f)
+            f.close()
+
+        # Committing, tagging, and pushing
+
+        print("Committing, tagging and pushing v%s..." % tag)
+        if not args.dry_run:
+            repo.git.add("Dockerfile")
+            repo.git.commit(m = "Update to GitLab v%s." % tag)
+            repo.git.tag(tag, m = "Tagged GitLab v%s." % tag)
+            repo.git.push()
+            repo.git.push(tags = True)
+
+        print("\n")
