@@ -4,7 +4,7 @@ Image: [marq/gitlab-ce-subgit](https://hub.docker.com/r/marq/gitlab-ce-subgit/)
 
 [GitLab](http://gitlab.org)'s Community Edition, with [SubGit](http://www.subgit.com) v3.3.5 and a working `cron`.
 
-All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/docker/) remains valid; the only difference compared to the [official Docker image(s)](https://hub.docker.com/r/gitlab/gitlab-ce/) provided by GitLabHQ is that this image contains an installation of SubGit, a tool for migrating and even mirroring subversion and git source code repositories. In addition, one more volume (`/etc/subgit`) is exposed, allowing to store SubGit related things like a license key. In addition, the  `cron` daemon is launched, with the corresponding system directory being exposed as an additional volume.
+All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/docker/) remains valid; the only difference compared to the [official Docker image(s)](https://hub.docker.com/r/gitlab/gitlab-ce/) provided by GitLabHQ is that this image contains an installation of SubGit, a tool for migrating and even mirroring subversion and git source code repositories. In addition, `/etc/subgit` is exposed, allowing to store SubGit related things like a license key. Furthermore, the `cron` daemon is launched, with the corresponding system directory being exposed as yet another volume.
 
 [Subgit's SVN to Gitlab Howto](http://www.subgit.com/gitlab.html) is a worthwhile read.
 
