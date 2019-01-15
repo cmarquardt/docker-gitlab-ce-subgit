@@ -161,7 +161,7 @@ RUN curl -o subgit.deb -q https://subgit.com/files/subgit_${{SUBGIT_VERSION}}_al
     dpkg -i subgit.deb && \\
     rm -fr subgit.deb
 
-# Fix SNI error with Java 7
+# Fix SNI error with Java
 RUN sed -i '/^EXTRA_JVM_ARGUMENTS.*/a EXTRA_JVM_ARGUMENTS="$EXTRA_JVM_ARGUMENTS -Djsse.enableSNIExtension=false"' /usr/bin/subgit
 
 # Our wrapper script (enabling cron, and then launching GitLab's wrapper)
@@ -185,7 +185,6 @@ if __name__ == "__main__":
 
     p = argparse.ArgumentParser()
 
-    p.add_argument("name", help = "Name of image to list versions of")
     p.add_argument("-m", "--max", metavar = "<max-number-of-releases>", help = "Number of releases to process", default = 0, type = int)
     p.add_argument("-l", "--list", help = "Only show which versions / imags would / could be built", action = "store_true", default = False)
     p.add_argument("-n", "--dry-run", help = "Only show what would be done; do not change anything", action = "store_true", default = False)
@@ -196,14 +195,18 @@ if __name__ == "__main__":
 
     args = p.parse_args()
 
-    # Get Docker Hub tags
-
-    token = args.token or get_docker_hub_token(auth_url = args.auth_url, image_name = args.name)
-    dtags = get_docker_tags(args.index_url, token, args.name)
-
     # Get git tags and branches
 
     branches, gtags, last = get_git_branches_and_tags(".")
+
+    # Determine if we're dealing with CE or EE versions
+
+    name = "gitlab/gitlab-%s" % last.kind
+
+    # Get Docker Hub tags
+
+    token = args.token or get_docker_hub_token(auth_url = args.auth_url, image_name = name)
+    dtags = get_docker_tags(args.index_url, token, name)
 
     # Extract the tags we're interested in
 
@@ -261,10 +264,10 @@ if __name__ == "__main__":
 
         print("Creating Dockerfile for GitLab v%s..." % tag)
         if args.dry_run:
-            print(dockerfile_template.format(name = args.name, tag = tag))
+            print(dockerfile_template.format(name = name, tag = tag))
         else:
             with open("Dockerfile", "w") as f:
-                print(dockerfile_template.format(name = args.name, tag = tag), file = f)
+                print(dockerfile_template.format(name = name, tag = tag), file = f)
             f.close()
 
         # Committing, tagging, and pushing
