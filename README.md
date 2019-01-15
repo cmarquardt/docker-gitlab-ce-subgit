@@ -6,7 +6,7 @@ Docker image: [marq/gitlab-ce-subgit](https://hub.docker.com/r/marq/gitlab-ce-su
 
 All of [GitLab's Docker-related documentation](http://doc.gitlab.com/omnibus/docker/) remains valid; the only difference compared to the [official Docker image(s)](https://hub.docker.com/r/gitlab/gitlab-ce/) provided by GitLab HQ is that this image contains an installation of SubGit, a tool for migrating and even mirroring subversion and git source code repositories. In addition, one more volume (`/etc/subgit`) is exposed, allowing to store SubGit related  things like a license key. Finally, the `cron` daemon is started up upon launching the image, and the corresponding system directory `/etc/cron.d` is also exported.
 
-[Subgit's SVN to Gitlab Howto](http://www.subgit.com/gitlab.html) is a worthwhile read. Note that his Docker image only contains the SubGit software, but no configuration or license files for it. There are also no cron jobs configured.
+[Subgit's SVN to Gitlab Howto](http://www.subgit.com/gitlab.html) is a worthwhile read. Note that his Docker image only contains the SubGit software, but no configuration or license files for it.
 
 ## Volumes
 
@@ -43,10 +43,10 @@ For older images, previous SubGit versions were used. In particular:
 
 For a while, I was maintaining alternate images with the older v3.0.0 of SubGit included. The images can be distinguished by their tags, e.g.:
 
-    gitlab-ee-subgit:8.11.0-ee.1:        GitLab v8.11.0 (EE), SubGit v3.2.2
-    gitlab-ee-subgit:8.11.0-ee.1-3.0.0:  GitLab v8.11.0 (EE), SubGit v3.0.0
+    gitlab-ce-subgit:8.11.0-ee.1:        GitLab v8.11.0 (CE), SubGit v3.2.2
+    gitlab-ce-subgit:8.11.0-ee.1-3.0.0:  GitLab v8.11.0 (CE), SubGit v3.0.0
 
-Since September 2016, however, v3.0.0 of SubGit was no longer available; hence, versions after v8.11.2 are build with the then current SubGit version.
+Since September 2016, however, v3.0.0 of SubGit was no longer available; hence, versions after v8.11.2 were build with later SubGit versions.
 
 ## Related
 
