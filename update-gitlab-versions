@@ -77,12 +77,21 @@ def get_git_branches_and_tags(path):
             tags.append(DockerTag(tag))
     last = sorted(tags, key = operator.attrgetter("major", "minor", "patch", "sp"))[-1]
 
-    return repo.heads, gtags, last
+    rbranches = []
+    for ref in repo.git.branch("-r").split("\n"):
+        rbranches.append(ref.strip())
+
+    return repo.heads, rbranches, gtags, last
 
 
 def tag2branch(tag):
 
     return "release/%d.%d" % (tag.major, tag.minor)
+
+
+def tag2rbranch(tag):
+
+    return "origin/release/%d.%d" % (tag.major, tag.minor)
 
 
 class DockerTag(object):
@@ -197,7 +206,7 @@ if __name__ == "__main__":
 
     # Get git tags and branches
 
-    branches, gtags, last = get_git_branches_and_tags(".")
+    branches, rbranches, gtags, last = get_git_branches_and_tags(".")
 
     # Determine if we're dealing with CE or EE versions
 
@@ -247,11 +256,18 @@ if __name__ == "__main__":
 
         # Switch into or create corresponding branch
 
-        branch = tag2branch(tag)
+        branch  = tag2branch(tag)
+        rbranch = tag2rbranch(tag)
+
         if branch in branches:
             print("Switching to branch %s" % branch)
             if not args.dry_run:
                 repo.git.checkout(branch)
+        elif rbranch in rbranches:
+            print("Checking out remote branch %s" % rbranch)
+            if not args.dry_run:
+                repo.git.checkout("--track", rbranch)
+                branches = repo.heads
         else:
             print("Creating new branch %s and pushing to origin..." % branch)
             if not args.dry_run:
