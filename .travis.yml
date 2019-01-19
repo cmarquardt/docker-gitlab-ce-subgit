@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.6"
+branches:
+  only:
+  - master
+# command to install dependencies
+install: pip install -r requirements.txt
+# command to run tests
+script:
+  - git fetch --all --tags
+  - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  - git fetch origin
+  - ./update-gitlab-versions --list
