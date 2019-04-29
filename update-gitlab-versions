@@ -223,7 +223,7 @@ if __name__ == "__main__":
     for tag in dtags:
         if docker_tag.match(tag) and tag not in gtags:
             t = DockerTag(tag)
-            if t > last:
+            if t > last or t.major >= last.major - 1:
                 tags.append(t)
 
     # Check is there's something to update
