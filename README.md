@@ -38,7 +38,7 @@ Present images (those build after April 2019) are using Subgit v3.3.6, as does t
 
 For older images, previous SubGit versions were used. In particular:
 
- - Gitlab v9.5.2 up to v11.8.x, v11.9.8 and v11.10.2: Subgit v3.3.5
+ - Gitlab v9.5.2 up to v11.8.x, v11.9.8 and v11.10.1: Subgit v3.3.5
  - GitLab v9.0 up to v9.5.1: SubGit v3.2.5
  - GitLab v8.11 up to v8.17.8: SubGit v3.2.2
 
