@@ -3,7 +3,7 @@ FROM gitlab/gitlab-ce:11.10.2-ce.0
 MAINTAINER Christian Marquardt
 
 # Subgit version
-ENV SUBGIT_VERSION 3.3.5
+ENV SUBGIT_VERSION 3.3.6
 
 # Install Java
 RUN apt-get update && \
