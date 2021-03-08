@@ -1,5 +1,5 @@
 
-FROM gitlab/gitlab-ce:13.9.2-ce.0
+FROM gitlab/gitlab-ce:13.9.3-ce.0
 MAINTAINER Christian Marquardt
 
 # Subgit version
